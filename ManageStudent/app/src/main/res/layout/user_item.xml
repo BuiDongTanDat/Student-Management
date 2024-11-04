@@ -13,12 +13,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <androidx.cardview.widget.CardView
+            android:id="@+id/avt"
+            android:layout_gravity="center"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@color/lightblue"
-            android:layout_marginRight="10dp"
-            android:id="@+id/imageViewUser" />
+            app:cardCornerRadius="100dp">
+            <ImageView
+                android:id="@+id/avtUserItem"
+                android:layout_gravity="center"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/book" />
+
+        </androidx.cardview.widget.CardView>
 
         <LinearLayout
             android:paddingLeft="10dp"

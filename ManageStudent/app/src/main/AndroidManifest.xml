@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -11,10 +13,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GK09"
-        tools:targetApi="31" >
+        tools:targetApi="31">
+        <activity
+            android:name=".UserManage"
+            android:exported="false"
+            android:label="Manage Users"
+            android:parentActivityName=".AfterLogin"/>
+        <activity
+            android:name=".UserProfile"
+            android:exported="false"
+            android:label="User profile"
+            android:parentActivityName=".AfterLogin" />
+        <activity
+            android:name=".AfterLogin"
+            android:exported="false"
+            android:label="Dashboard"
+            android:launchMode="singleTop" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" >
+            android:label="LOGIN"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -5,24 +5,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="10dp"
+    android:backgroundTint="@color/white"
     android:fitsSystemWindows="true"
     android:background="@color/white">
 
 
-
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
-        android:src="@drawable/book" />
+        android:src="@drawable/logo" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="25dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
         app:cardCornerRadius="20dp"
+        android:background="@color/white"
+        android:backgroundTint="@color/white"
         app:cardElevation="25dp">
 
         <LinearLayout
@@ -42,22 +44,25 @@
                 android:textColor="@color/blue"
                 android:textSize="30sp" />
 
+
             <EditText
-                android:id="@+id/username"
+                android:id="@+id/emailLogin"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_margin="10dp"
-                android:background="@drawable/input_text_shape"
-                android:drawableStart="@drawable/baseline_person_24"
+                android:drawableStart="@drawable/baseline_email_24"
                 android:drawablePadding="10dp"
                 android:drawableTint="@color/black"
                 android:fontFamily="@font/poppins_medium"
+                android:background="@drawable/input_text_shape"
                 android:gravity="center_vertical"
-                android:hint="Username"
+                android:hint="Email"
+                android:textColorHint="@color/grey"
+                android:textColor="@color/black"
                 android:paddingStart="20dp" />
 
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/passwordLogin"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_margin="10dp"
@@ -68,6 +73,8 @@
                 android:fontFamily="@font/poppins_medium"
                 android:gravity="center_vertical"
                 android:hint="Password"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey"
                 android:paddingStart="20dp"
                 android:inputType="textPassword" />
 
@@ -88,5 +95,14 @@
 
 
         </LinearLayout>
+
     </androidx.cardview.widget.CardView>
+    <ProgressBar
+        android:id="@+id/processLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        />
 </LinearLayout>
