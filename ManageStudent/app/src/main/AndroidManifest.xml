@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -29,6 +30,19 @@
             android:exported="false"
             android:label="Dashboard"
             android:launchMode="singleTop" />
+
+        <activity
+            android:name=".StudentManage"
+            android:exported="false"
+            android:label="Student Management"
+            android:parentActivityName=".AfterLogin" />
+
+        <activity
+            android:name=".AddStudent"
+            android:exported="false"
+            android:label="Add Student"
+            android:parentActivityName=".StudentManage" />
+
         <activity
             android:name=".MainActivity"
             android:label="LOGIN"

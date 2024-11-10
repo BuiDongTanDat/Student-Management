@@ -118,6 +118,13 @@ public class AfterLogin extends AppCompatActivity {
             }
         });
 
+        goStudent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AfterLogin.this, StudentManage.class);
+                startActivity(intent);
+            }
+        });
 
 
     }
