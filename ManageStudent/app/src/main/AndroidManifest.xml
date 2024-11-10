@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -15,10 +18,22 @@
         android:theme="@style/Theme.GK09"
         tools:targetApi="31">
         <activity
+            android:name=".UserView"
+            android:exported="false"
+            android:label="User Profile" />
+        <activity
+            android:name=".UserAdd"
+            android:exported="false"
+            android:label="Add User" />
+        <activity
+            android:name=".UserEdit"
+            android:exported="false"
+            android:label="Edit User" />
+        <activity
             android:name=".UserManage"
             android:exported="false"
             android:label="Manage Users"
-            android:parentActivityName=".AfterLogin"/>
+            android:parentActivityName=".AfterLogin" />
         <activity
             android:name=".UserProfile"
             android:exported="false"
@@ -31,8 +46,8 @@
             android:launchMode="singleTop" />
         <activity
             android:name=".MainActivity"
-            android:label="LOGIN"
-            android:exported="true">
+            android:exported="true"
+            android:label="LOGIN">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
