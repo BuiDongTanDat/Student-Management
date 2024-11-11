@@ -44,6 +44,12 @@
             android:parentActivityName=".StudentManage" />
 
         <activity
+            android:name=".UpdateStudent"
+            android:exported="false"
+            android:label="Update Student"
+            android:parentActivityName=".StudentManage" />
+
+        <activity
             android:name=".MainActivity"
             android:label="LOGIN"
             android:exported="true">

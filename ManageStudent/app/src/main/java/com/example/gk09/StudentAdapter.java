@@ -1,5 +1,6 @@
 package com.example.gk09;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -38,19 +40,15 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         try {
             QueryDocumentSnapshot document = studentList.get(position);
 
-            // Name
             String name = document.getString("name");
             holder.studentName.setText(name != null ? name : "No Name");
 
-            // Class
             String studentClass = document.getString("studentClass");
             holder.studentClass.setText(studentClass != null ? studentClass : "No Class");
 
-            // Email
             String email = document.getString("email");
             holder.studentEmail.setText(email != null ? email : "No Email");
 
-            // Image
             String imageUrl = document.getString("imageUrl");
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 Picasso.get()
@@ -61,6 +59,26 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             } else {
                 holder.studentImage.setImageResource(android.R.drawable.ic_menu_gallery);
             }
+
+            holder.itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(activity, UpdateStudent.class);
+                intent.putExtra("studentId", document.getId());
+                intent.putExtra("name", document.getString("name"));
+                intent.putExtra("studentClass", document.getString("studentClass"));
+                intent.putExtra("email", document.getString("email"));
+                intent.putExtra("phone", document.getString("phone"));
+                intent.putExtra("address", document.getString("address"));
+
+                Long age = document.getLong("age");
+                intent.putExtra("age", age != null ? age : 0L);  // Use Long instead of int
+
+                activity.startActivity(intent);
+            });
+
+            holder.btnDelete.setOnClickListener(v -> {
+                activity.showDeleteConfirmation(document.getId());
+            });
+
         } catch (Exception e) {
             Log.e("StudentAdapter", "Error binding view holder: " + e.getMessage());
         }
