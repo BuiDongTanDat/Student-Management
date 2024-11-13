@@ -1,3 +1,5 @@
+import java.util.regex.Pattern.compile
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
@@ -61,6 +63,8 @@ dependencies {
     implementation (libs.cloudinary.android)
     implementation (libs.cloudinary.android.download)
     implementation (libs.cloudinary.android.preprocess)
+    implementation("com.opencsv:opencsv:5.5")
+
 
 
 }
