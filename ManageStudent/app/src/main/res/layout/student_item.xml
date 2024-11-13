@@ -132,7 +132,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:padding="12dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:backgroundTint="@color/darkblue"
             android:src="@android:drawable/ic_menu_edit"
             android:contentDescription="Edit student"/>
 
@@ -141,7 +141,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:padding="12dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:backgroundTint="@color/red"
             android:src="@android:drawable/ic_menu_delete"
             android:contentDescription="Delete student"/>
     </LinearLayout>

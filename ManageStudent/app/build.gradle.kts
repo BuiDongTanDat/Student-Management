@@ -42,7 +42,6 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.firebase.auth)
-    implementation(libs.firebase.database)
     implementation(libs.annotation)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
@@ -51,9 +50,17 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
     implementation ("com.squareup.picasso:picasso:2.8")
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
+    implementation (libs.cloudinary.android)
+    implementation (libs.cloudinary.android.download)
+    implementation (libs.cloudinary.android.preprocess)
+
+
 }

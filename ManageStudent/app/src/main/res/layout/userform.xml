@@ -11,29 +11,42 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
         <androidx.cardview.widget.CardView
             android:id="@+id/avt"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_height="wrap_content"
             app:cardCornerRadius="100dp">
+
             <ImageView
-                android:id="@+id/avtUser"
-                android:layout_gravity="center"
+                android:id="@+id/edtUserAvatar"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/book" />
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:src="@drawable/avtdf" />
+            <TextView
+                android:id="@+id/tvCamera"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:indeterminate="true"
+                android:background="@drawable/baseline_photo_camera_24"
+
+                android:backgroundTint="@color/white" />
+            <ProgressBar
+                android:id="@+id/progressBarUE"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:visibility="gone"/>
 
         </androidx.cardview.widget.CardView>
-        <TextView
-            android:id="@+id/tvCamera"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="bottom"
-            android:background="@drawable/baseline_photo_camera_24"
-            android:backgroundTint="@color/black" />
+
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,7 +56,7 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/username"
+            android:id="@+id/edtUserName"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_margin="10dp"
@@ -54,10 +67,11 @@
             android:fontFamily="@font/poppins_medium"
             android:gravity="center_vertical"
             android:hint="Username"
+            android:singleLine="true"
             android:paddingStart="20dp" />
 
         <EditText
-            android:id="@+id/password"
+            android:id="@+id/edtUserPassword"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_margin="10dp"
@@ -69,10 +83,11 @@
             android:gravity="center_vertical"
             android:hint="Password"
             android:paddingStart="20dp"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:singleLine="true"/>
 
         <EditText
-            android:id="@+id/email"
+            android:id="@+id/edtUserEmail"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_margin="10dp"
@@ -84,10 +99,11 @@
             android:gravity="center_vertical"
             android:hint="Email"
             android:paddingStart="20dp"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:singleLine="true"/>
 
         <EditText
-            android:id="@+id/age"
+            android:id="@+id/edtUserAge"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_margin="10dp"
@@ -99,10 +115,11 @@
             android:gravity="center_vertical"
             android:hint="Age"
             android:paddingStart="20dp"
+            android:singleLine="true"
             android:inputType="number" />
 
         <EditText
-            android:id="@+id/phone"
+            android:id="@+id/edtUserPhone"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_margin="10dp"
@@ -114,9 +131,10 @@
             android:gravity="center_vertical"
             android:hint="Phone"
             android:paddingStart="20dp"
+            android:singleLine="true"
             android:inputType="phone" />
         <EditText
-            android:id="@+id/role"
+            android:id="@+id/edtUserRole"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_margin="10dp"
@@ -128,21 +146,24 @@
             android:gravity="center_vertical"
             android:hint="Role"
             android:paddingStart="20dp"
-            android:inputType="phone" />
+            android:focusable="false"
+            android:singleLine="true"
+            android:inputType="text" />
         <Switch
+            android:id="@+id/switchEditStatus"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:layout_gravity="center"
             android:gravity="center"
             android:drawableTint="@color/black"
             android:fontFamily="@font/poppins_medium"
             android:textSize="18sp"
-            android:text="Account Status:"/>
+            android:text="Set Account Status:"/>
 
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnSave"
+        android:id="@+id/btnSaveEditUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -152,6 +173,7 @@
         android:fontFamily="@font/poppins_medium"
         android:text="SAVE"
         android:textColor="@color/white"
+        android:backgroundTint="@color/lightgreen"
         android:textSize="18sp" />
 
 </LinearLayout>

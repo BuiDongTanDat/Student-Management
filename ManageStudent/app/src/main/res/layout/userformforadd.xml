@@ -170,6 +170,7 @@
         android:layout_margin="20dp"
 
         android:background="@drawable/button_custom"
+        android:backgroundTint="@color/lightgreen"
         android:fontFamily="@font/poppins_medium"
         android:text="SAVE"
         android:textColor="@color/white"

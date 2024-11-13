@@ -11,6 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:hint="Certificate Name"
+        android:padding="12dp"
+        android:background="@drawable/input_text_shape"
         android:inputType="text"/>
 
     <EditText
@@ -20,6 +22,8 @@
         android:layout_marginBottom="16dp"
         android:hint="Description"
         android:inputType="textMultiLine"
+        android:background="@drawable/input_text_shape"
+        android:padding="12dp"
         android:minLines="2"/>
 
     <EditText
@@ -27,27 +31,51 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
+        android:padding="12dp"
+        android:background="@drawable/input_text_shape"
         android:hint="Issued By"
         android:inputType="text"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:text="Issue Date"/>
     <Button
         android:id="@+id/btnIssueDatePicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/button_custom"
+        android:textColor="@color/white"
         android:text="Select Issue Date"/>
 
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:text="Expiry Date"/>
     <Button
         android:id="@+id/btnExpiryDatePicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/button_custom"
+        android:textColor="@color/white"
         android:text="Select Expiry Date"/>
 
     <Button
         android:id="@+id/btnUpdate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_custom"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/lightgreen"
         android:text="Update Certificate"/>
 
     <ProgressBar

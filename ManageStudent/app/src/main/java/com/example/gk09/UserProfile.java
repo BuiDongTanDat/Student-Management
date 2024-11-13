@@ -2,37 +2,37 @@ package com.example.gk09;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.bumptech.glide.Glide;
+
 
 public class UserProfile extends AppCompatActivity {
 
     TextView usernameUP, passwordUP, emailUP, ageUP, phoneUP, roleUP,tvStatusUP;
     Button btnLogout;
     ImageView avtUserUP;
-    int PICK_IMAGE_REQUEST = 1;
+    ProgressBar processBarUP;
+    int EDIT_REQUEST = 1;
+    User currUser;
+    FireStoreHelper fireStoreHelper;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,9 @@ public class UserProfile extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.userdetail);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        fireStoreHelper = new FireStoreHelper();
 
         usernameUP = findViewById(R.id.usernameUP);
         passwordUP = findViewById(R.id.passwordUP);
@@ -51,22 +53,28 @@ public class UserProfile extends AppCompatActivity {
         tvStatusUP = findViewById(R.id.tvStatusUP);
         btnLogout = findViewById(R.id.btnLogout);
         avtUserUP = findViewById(R.id.avtUserUP);
+        processBarUP = findViewById(R.id.ProgressBarUP);
 
 
 
         // Get the user object from the intent
         Intent intent = getIntent();
-        User user = (User) intent.getSerializableExtra("user");
-        Log.d("USER", user != null ? user.getName() : "No user logged in");
-        if (user != null) {
+        currUser = (User) intent.getSerializableExtra("user");
+
+        Log.d("Pass", currUser.getPassword());
+
+        if (currUser != null) {
             // Set the user details in the UI
-            usernameUP.setText(user.getName().toString());
-            passwordUP.setText(user.getPassword());
-            emailUP.setText(user.getEmail());
-            ageUP.setText(String.valueOf(user.getAge()));
-            phoneUP.setText(user.getPhone());
-            roleUP.setText(user.getRole());
-            boolean status = user.isStatus();
+            usernameUP.setText(currUser.getName());
+            Log.d("Pass", currUser.getPassword());
+            Log.d("Sttus", String.valueOf(currUser.isStatus()));
+
+            passwordUP.setText(currUser.getPassword());
+            emailUP.setText(currUser.getEmail());
+            ageUP.setText(String.valueOf(currUser.getAge()));
+            phoneUP.setText(currUser.getPhone());
+            roleUP.setText(currUser.getRole());
+            boolean status = currUser.isStatus();
             if (status) {
                 tvStatusUP.setText("Account activated");
                 tvStatusUP.setTextColor(getResources().getColor(R.color.green));
@@ -75,18 +83,13 @@ public class UserProfile extends AppCompatActivity {
                 tvStatusUP.setTextColor(getResources().getColor(R.color.red));
             }
 
-            Picasso.get().load(user.getImage()).into(avtUserUP);
+            if(currUser.getImage() != null){
+            Glide.with(UserProfile.this).load(currUser.getImage()).into(avtUserUP);}
+            else{
+                avtUserUP.setImageResource(R.drawable.avtdf);
+            }
         }
 
-        avtUserUP.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Mở thư viện ảnh
-                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-                startActivityForResult(intent, PICK_IMAGE_REQUEST);
-            }
-        });
 
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,14 +101,18 @@ public class UserProfile extends AppCompatActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // Đăng xuất người dùng khỏi Firebase
-                                FirebaseAuth.getInstance().signOut();
+
+                                //Remove Login session of current user
+                                SharedPreferences sharedPreferences = getSharedPreferences("User Session", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.remove("uid");
+                                editor.apply();
 
                                 // Chuyển về màn hình đăng nhập (MainActivity)
                                 Intent intent = new Intent(UserProfile.this, MainActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
-                                finish(); // Đóng UserProfile Activity
+                                finish();
                             }
                         })
                         .setNegativeButton("No", null)
@@ -115,48 +122,57 @@ public class UserProfile extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.user_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.mnEdit){
+            Intent intent = new Intent(UserProfile.this, UserEdit.class);
+            intent.putExtra("user", currUser);
+            intent.putExtra("currRole", currUser.getRole());
+            startActivityForResult(intent, EDIT_REQUEST);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            Uri selectedImageUri = data.getData();
-            if (selectedImageUri != null) {
-                // Hiển thị ảnh đã chọn
-                Picasso.get().load(selectedImageUri).into(avtUserUP);
-                // Tải ảnh lên Firebase Storage
-                uploadImageToFirebaseStorage(selectedImageUri);
+
+        if (requestCode == EDIT_REQUEST && resultCode == RESULT_OK && data != null) {
+            User updatedUser = (User ) data.getSerializableExtra("updatedUser");
+            if (updatedUser != null) {
+                // Update the UI with the new user data
+                usernameUP.setText(updatedUser .getName());
+                passwordUP.setText(updatedUser .getPassword()); // Be cautious with this
+                emailUP.setText(updatedUser .getEmail());
+                ageUP.setText(String.valueOf(updatedUser .getAge()));
+                phoneUP.setText(updatedUser .getPhone());
+                roleUP.setText(updatedUser .getRole());
+                boolean status = updatedUser .isStatus();
+                if (status) {
+                    tvStatusUP.setText("Account activated");
+                    tvStatusUP.setTextColor(getResources().getColor(R.color.green));
+                } else {
+                    tvStatusUP.setText("Account not activated");
+                    tvStatusUP.setTextColor(getResources().getColor(R.color.red));
+                }
+
+                currUser  = updatedUser ; // Update the current user reference
+
+                // Load updated image if available
+                if (updatedUser.getImage() != null) {
+                    Glide.with(UserProfile.this).load(updatedUser .getImage()).into(avtUserUP);
+                } else {
+                    avtUserUP.setImageResource(R.drawable.avtdf); // Default image
+                }
             }
         }
     }
 
-    private void uploadImageToFirebaseStorage(Uri imageUri) {
-        if (imageUri != null) {
-            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference("user/" + uid + "/image");
-
-            storageReference.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        // Lấy URL của ảnh sau khi tải lên thành công
-                        storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                            // Lưu URL vào Firebase Realtime Database
-                            saveImageUrlToFirebase(uri.toString());
-                        });
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(UserProfile.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
-                    });
-        }
-    }
-
-    private void saveImageUrlToFirebase(String imageUrl) {
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseDatabase.getInstance().getReference("users").child(uid).child("image")
-                .setValue(imageUrl)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(UserProfile.this, "Image updated successfully", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(UserProfile.this, "Failed to update image", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
 }
