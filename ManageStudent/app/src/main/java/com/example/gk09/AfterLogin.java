@@ -85,30 +85,7 @@ public class AfterLogin extends AppCompatActivity {
         });
     }
 
-    private void loadUserInfo() {
-        if (uid != null) {
-            progressFistLoad.setVisibility(View.VISIBLE);
-            FireStoreHelper fireStoreHelper = new FireStoreHelper();
-            fireStoreHelper.loadUser (uid, new FireStoreHelper.FirestoreCallback() {
-                @Override
-                public void onSuccess(User user) {
-                    displayName = user.getName();
-                    imageUrl = user.getImage();
-                    role = user.getRole();
-                    phone = user.getPhone();
-                    status = user.isStatus();
-                    age = user.getAge();
-                    password = user.getPassword();
-                    email = user.getEmail();
-                    nameLogin.setText(displayName);
 
-                    roleSession = user.getRole();
-
-                    if (imageUrl != null && !imageUrl.isEmpty()) {
-                        Glide.with(AfterLogin.this).load(imageUrl).into(avtUser );
-                    } else {
-                        avtUser .setImageResource(R.drawable.avtdf); // Default image
-                    }
 
                     if ("manager".equals(role)) {
                         goUser .setActivated(false);

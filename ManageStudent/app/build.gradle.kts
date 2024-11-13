@@ -50,11 +50,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation (libs.glide)
-    annotationProcessor (libs.compiler)
-
-    implementation (libs.cloudinary.android)
-    implementation (libs.cloudinary.android.download)
-    implementation (libs.cloudinary.android.preprocess)
 
 }
