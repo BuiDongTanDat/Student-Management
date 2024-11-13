@@ -1,6 +1,7 @@
 package com.example.gk09;
 
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +31,21 @@ public class UpdateStudent extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
+        initializeViews();
+
+        studentId = getIntent().getStringExtra("studentId");
+        if (studentId == null) {
+            Toast.makeText(this, "Error: Student ID not found", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        loadStudentData();
+
+        btnUpdate.setOnClickListener(v -> updateStudent());
+    }
+
+    private void initializeViews() {
         editName = findViewById(R.id.editName);
         editClass = findViewById(R.id.editClass);
         editEmail = findViewById(R.id.editEmail);
@@ -38,18 +54,31 @@ public class UpdateStudent extends AppCompatActivity {
         editAddress = findViewById(R.id.editAddress);
         btnUpdate = findViewById(R.id.btnUpdate);
         progressBar = findViewById(R.id.progressBar);
+    }
 
-        studentId = getIntent().getStringExtra("studentId");
-        editName.setText(getIntent().getStringExtra("name"));
-        editClass.setText(getIntent().getStringExtra("studentClass"));
-        editEmail.setText(getIntent().getStringExtra("email"));
-        editPhone.setText(getIntent().getStringExtra("phone"));
-        editAddress.setText(getIntent().getStringExtra("address"));
-
-        Long age = getIntent().getLongExtra("age", 0L);
-        editAge.setText(String.valueOf(age));
-
-        btnUpdate.setOnClickListener(v -> updateStudent());
+    private void loadStudentData() {
+        progressBar.setVisibility(View.VISIBLE);
+        db.collection("students").document(studentId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    progressBar.setVisibility(View.GONE);
+                    if (documentSnapshot.exists()) {
+                        editName.setText(documentSnapshot.getString("name"));
+                        editClass.setText(documentSnapshot.getString("studentClass"));
+                        editEmail.setText(documentSnapshot.getString("email"));
+                        editPhone.setText(documentSnapshot.getString("phone"));
+                        editAddress.setText(documentSnapshot.getString("address"));
+                        Long age = documentSnapshot.getLong("age");
+                        if (age != null) {
+                            editAge.setText(String.valueOf(age));
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(this, "Error loading student data: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void updateStudent() {
@@ -60,36 +89,40 @@ public class UpdateStudent extends AppCompatActivity {
         String address = editAddress.getText().toString().trim();
         String ageStr = editAge.getText().toString().trim();
 
-        if (name.isEmpty() || studentClass.isEmpty() || email.isEmpty()) {
-            Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
+        // Validation
+        if (name.isEmpty()) {
+            editName.setError("Name is required");
+            return;
+        }
+        if (studentClass.isEmpty()) {
+            editClass.setError("Class is required");
+            return;
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editEmail.setError("Valid email is required");
             return;
         }
 
         progressBar.setVisibility(View.VISIBLE);
         btnUpdate.setEnabled(false);
 
-        long age;
-        try {
-            age = Long.parseLong(ageStr);
-        } catch (NumberFormatException e) {
-            age = 0L;
-        }
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", name);
+        updates.put("nameSearch", name.toLowerCase());
+        updates.put("studentClass", studentClass);
+        updates.put("classSearch", studentClass.toLowerCase());
+        updates.put("email", email);
+        updates.put("emailSearch", email.toLowerCase());
+        updates.put("phone", phone);
+        updates.put("address", address);
+        updates.put("age", Integer.parseInt(ageStr.isEmpty() ? "0" : ageStr));
 
-        Map<String, Object> student = new HashMap<>();
-        student.put("name", name);
-        student.put("studentClass", studentClass);
-        student.put("email", email);
-        student.put("phone", phone);
-        student.put("address", address);
-        student.put("age", age);  // Use the long value
-        student.put("timestamp", FieldValue.serverTimestamp());
-
-        db.collection("students")
-                .document(studentId)
-                .update(student)
+        db.collection("students").document(studentId)
+                .update(updates)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Student updated successfully", Toast.LENGTH_SHORT).show();
-                    finish(); // Return to list
+                    Toast.makeText(this, "Student updated successfully",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     progressBar.setVisibility(View.GONE);

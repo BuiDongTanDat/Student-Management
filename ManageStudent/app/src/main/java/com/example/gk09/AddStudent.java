@@ -12,12 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class AddStudent extends AppCompatActivity {
-
+    private static final String TAG = "AddStudent";
     private EditText editName, editClass, editEmail, editPhone, editAge, editAddress;
     private Button btnSave;
     private FirebaseFirestore db;
@@ -30,28 +31,31 @@ public class AddStudent extends AppCompatActivity {
             setContentView(R.layout.activity_add_student);
 
             db = FirebaseFirestore.getInstance();
-
-            editName = findViewById(R.id.editName);
-            editClass = findViewById(R.id.editClass);
-            editEmail = findViewById(R.id.editEmail);
-            editPhone = findViewById(R.id.editPhone);
-            editAge = findViewById(R.id.editAge);
-            editAddress = findViewById(R.id.editAddress);
-            btnSave = findViewById(R.id.btnSave);
-            progressBar = findViewById(R.id.progressBar);
-
+            initializeViews();
             btnSave.setOnClickListener(v -> saveStudent());
 
         } catch (Exception e) {
-            Log.e("AddStudent", "Error in onCreate: " + e.getMessage());
+            Log.e(TAG, "Error in onCreate: " + e.getMessage());
             Toast.makeText(this, "Error initializing: " + e.getMessage(),
                     Toast.LENGTH_SHORT).show();
             finish();
         }
     }
 
+    private void initializeViews() {
+        editName = findViewById(R.id.editName);
+        editClass = findViewById(R.id.editClass);
+        editEmail = findViewById(R.id.editEmail);
+        editPhone = findViewById(R.id.editPhone);
+        editAge = findViewById(R.id.editAge);
+        editAddress = findViewById(R.id.editAddress);
+        btnSave = findViewById(R.id.btnSave);
+        progressBar = findViewById(R.id.progressBar);
+    }
+
     private void saveStudent() {
         try {
+            // Validation and data collection remains same
             String name = editName.getText().toString().trim();
             String studentClass = editClass.getText().toString().trim();
             String email = editEmail.getText().toString().trim();
@@ -59,6 +63,7 @@ public class AddStudent extends AppCompatActivity {
             String address = editAddress.getText().toString().trim();
             String ageStr = editAge.getText().toString().trim();
 
+            // Validation checks remain same
             if (name.isEmpty()) {
                 editName.setError("Name is required");
                 return;
@@ -75,6 +80,7 @@ public class AddStudent extends AppCompatActivity {
             progressBar.setVisibility(View.VISIBLE);
             btnSave.setEnabled(false);
 
+            // Create student data
             Map<String, Object> student = new HashMap<>();
             student.put("name", name);
             student.put("nameSearch", name.toLowerCase());
@@ -88,22 +94,58 @@ public class AddStudent extends AppCompatActivity {
             student.put("imageUrl", "");
             student.put("timestamp", FieldValue.serverTimestamp());
 
-            db.collection("students")
-                    .add(student)
-                    .addOnSuccessListener(documentReference -> {
-                        Toast.makeText(this, "Student added successfully", Toast.LENGTH_SHORT).show();
+            Map<String, Object> initialCertificate = new HashMap<>();
+            initialCertificate.put("name", "Initial");
+            initialCertificate.put("description", "Initial certificate to create collection");
+            initialCertificate.put("issuedBy", "System");
+            initialCertificate.put("issueDate", FieldValue.serverTimestamp());
+            initialCertificate.put("createAt", FieldValue.serverTimestamp());
+
+            // Use WriteBatch for atomic operation
+            WriteBatch batch = db.batch();
+
+            // Create student document reference with specific ID
+            String studentId = db.collection("students").document().getId();
+
+            // Set the student document
+            batch.set(db.collection("students").document(studentId), student);
+
+            // Create certificates collection with initial document
+            batch.set(
+                    db.collection("students")
+                            .document(studentId)
+                            .collection("certificates")
+                            .document("initial"),
+                    initialCertificate
+            );
+
+            // Commit the batch operation
+            batch.commit()
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "Student and certificates collection created successfully");
+                        Toast.makeText(AddStudent.this,
+                                "Student added successfully",
+                                Toast.LENGTH_SHORT).show();
                         finish();
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Error creating student and certificates: ", e);
+                        progressBar.setVisibility(View.GONE);
+                        btnSave.setEnabled(true);
+                        Toast.makeText(AddStudent.this,
+                                "Error adding student: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
                     });
 
         } catch (Exception e) {
-            Log.e("AddStudent", "Error saving student: " + e.getMessage());
+            Log.e(TAG, "Error in saveStudent: " + e.getMessage());
+            progressBar.setVisibility(View.GONE);
+            btnSave.setEnabled(true);
             Toast.makeText(this, "Error: " + e.getMessage(),
                     Toast.LENGTH_SHORT).show();
         }
     }
+
 
     @Override
     public void onBackPressed() {

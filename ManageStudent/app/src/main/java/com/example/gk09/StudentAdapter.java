@@ -8,9 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -19,6 +21,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHolder> {
+    private static final String TAG = "StudentAdapter";
     private List<QueryDocumentSnapshot> studentList;
     private StudentManage activity;
 
@@ -30,7 +33,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     @NonNull
     @Override
     public StudentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        View view = LayoutInflater.from(activity)
                 .inflate(R.layout.student_item, parent, false);
         return new StudentViewHolder(view);
     }
@@ -41,15 +44,16 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             QueryDocumentSnapshot document = studentList.get(position);
 
             String name = document.getString("name");
-            holder.studentName.setText(name != null ? name : "No Name");
-
             String studentClass = document.getString("studentClass");
-            holder.studentClass.setText(studentClass != null ? studentClass : "No Class");
-
             String email = document.getString("email");
+            String imageUrl = document.getString("imageUrl");
+
+            // Set basic info
+            holder.studentName.setText(name != null ? name : "No Name");
+            holder.studentClass.setText(studentClass != null ? studentClass : "No Class");
             holder.studentEmail.setText(email != null ? email : "No Email");
 
-            String imageUrl = document.getString("imageUrl");
+            // Handle image
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 Picasso.get()
                         .load(imageUrl)
@@ -60,27 +64,55 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
                 holder.studentImage.setImageResource(android.R.drawable.ic_menu_gallery);
             }
 
+            // Item click for view details
             holder.itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(activity, UpdateStudent.class);
-                intent.putExtra("studentId", document.getId());
-                intent.putExtra("name", document.getString("name"));
-                intent.putExtra("studentClass", document.getString("studentClass"));
-                intent.putExtra("email", document.getString("email"));
-                intent.putExtra("phone", document.getString("phone"));
-                intent.putExtra("address", document.getString("address"));
-
-                Long age = document.getLong("age");
-                intent.putExtra("age", age != null ? age : 0L);  // Use Long instead of int
-
-                activity.startActivity(intent);
+                try {
+                    Intent intent = new Intent(activity, StudentDetails.class);
+                    intent.putExtra("studentId", document.getId());
+                    intent.putExtra("name", name);
+                    intent.putExtra("studentClass", studentClass);
+                    intent.putExtra("email", email);
+                    intent.putExtra("phone", document.getString("phone"));
+                    intent.putExtra("address", document.getString("address"));
+                    if (document.contains("age")) {
+                        intent.putExtra("age", document.getLong("age"));
+                    }
+                    activity.startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error opening details: " + e.getMessage());
+                    Toast.makeText(activity, "Error viewing student details", Toast.LENGTH_SHORT).show();
+                }
             });
 
+            // Handle edit button click
+            holder.btnEdit.setOnClickListener(v -> {
+                try {
+                    Intent intent = new Intent(activity, UpdateStudent.class);
+                    intent.putExtra("studentId", document.getId());
+                    intent.putExtra("name", name);
+                    intent.putExtra("studentClass", studentClass);
+                    intent.putExtra("email", email);
+                    intent.putExtra("phone", document.getString("phone"));
+                    intent.putExtra("address", document.getString("address"));
+                    if (document.contains("age")) {
+                        intent.putExtra("age", document.getLong("age"));
+                    }
+                    activity.startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error launching edit: " + e.getMessage());
+                    Toast.makeText(activity, "Error editing student", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            // Handle delete button click
             holder.btnDelete.setOnClickListener(v -> {
-                activity.showDeleteConfirmation(document.getId());
+                if (activity != null) {
+                    activity.showDeleteConfirmation(document.getId());
+                }
             });
 
         } catch (Exception e) {
-            Log.e("StudentAdapter", "Error binding view holder: " + e.getMessage());
+            Log.e(TAG, "Error binding view holder: " + e.getMessage());
         }
     }
 
@@ -92,7 +124,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     static class StudentViewHolder extends RecyclerView.ViewHolder {
         TextView studentName, studentClass, studentEmail;
         ImageView studentImage;
-        ImageButton btnDelete;
+        ImageButton btnEdit, btnDelete;
 
         StudentViewHolder(View itemView) {
             super(itemView);
@@ -100,7 +132,9 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             studentClass = itemView.findViewById(R.id.studentClass);
             studentEmail = itemView.findViewById(R.id.studentEmail);
             studentImage = itemView.findViewById(R.id.studentImage);
+            btnEdit = itemView.findViewById(R.id.btnEdit);  // Make sure this ID matches your layout
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 }
+

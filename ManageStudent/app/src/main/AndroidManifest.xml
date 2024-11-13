@@ -50,6 +50,23 @@
             android:parentActivityName=".StudentManage" />
 
         <activity
+            android:name=".StudentDetails"
+            android:exported="false"
+            android:label="Student Details"
+            android:parentActivityName=".StudentManage" />
+
+        <activity
+            android:name=".AddCertificate"
+            android:exported="false"
+            android:label="Add Certificate"
+            android:parentActivityName=".StudentDetails" />
+
+        <activity
+            android:name=".UpdateCertificate"
+            android:exported="false"
+            android:label="Update Certificate" />
+
+        <activity
             android:name=".MainActivity"
             android:label="LOGIN"
             android:exported="true">
