@@ -59,5 +59,7 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
-
+    implementation(libs.glide)
+    implementation(libs.cloudinary.android)
+    implementation("com.opencsv:opencsv:5.5")
 }
