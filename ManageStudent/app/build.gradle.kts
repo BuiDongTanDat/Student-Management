@@ -56,4 +56,5 @@ dependencies {
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+    implementation("com.opencsv:opencsv:5.5")
 }
