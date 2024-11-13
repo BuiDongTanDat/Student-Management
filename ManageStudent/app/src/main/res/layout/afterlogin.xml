@@ -22,7 +22,15 @@
             android:layout_gravity="center"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/book" />
+            android:scaleType="centerCrop"
+             />
+        <ProgressBar
+            android:id="@+id/progressFistLoad"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:indeterminate="true"
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
     </androidx.cardview.widget.CardView>
 
@@ -47,6 +55,9 @@
         android:layout_marginRight="60dp"
         android:layout_marginLeft="60dp"
         android:backgroundTint="@color/white"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_height="500px">
         <ImageView
             android:id="@+id/userManage"
@@ -74,6 +85,9 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="60dp"
         android:layout_marginLeft="60dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:backgroundTint="@color/white"
         android:layout_height="500px">
         <ImageView

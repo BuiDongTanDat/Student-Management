@@ -15,6 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="Student Name *"
+            android:background="@drawable/input_text_shape"
             android:inputType="textPersonName"
             android:padding="12dp" />
 
@@ -23,6 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:background="@drawable/input_text_shape"
             android:hint="Class *"
             android:inputType="text"
             android:padding="12dp" />
@@ -32,6 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:background="@drawable/input_text_shape"
             android:hint="Email *"
             android:inputType="textEmailAddress"
             android:padding="12dp" />
@@ -41,6 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:background="@drawable/input_text_shape"
             android:hint="Phone"
             android:inputType="phone"
             android:padding="12dp" />
@@ -50,6 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:background="@drawable/input_text_shape"
             android:hint="Age"
             android:inputType="number"
             android:padding="12dp" />
@@ -59,6 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:background="@drawable/input_text_shape"
             android:hint="Address"
             android:inputType="textPostalAddress"
             android:lines="3"
@@ -78,6 +84,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Update Student"
+            android:background="@drawable/button_custom"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/lightgreen"
             android:padding="12dp" />
 
     </LinearLayout>

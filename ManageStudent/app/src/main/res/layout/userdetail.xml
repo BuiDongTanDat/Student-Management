@@ -7,32 +7,36 @@
     android:fitsSystemWindows="true"
     android:background="@color/white">
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="horizontal">
+
         <androidx.cardview.widget.CardView
             android:id="@+id/avtUserProfile"
             android:layout_width="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             app:cardCornerRadius="100dp">
             <ImageView
                 android:id="@+id/avtUserUP"
-                android:layout_gravity="center"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
                 android:src="@drawable/book" />
+            <ProgressBar
+                android:id="@+id/ProgressBarUP"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:visibility="gone"/>
 
         </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/tvCamera"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="bottom"
-            android:background="@drawable/baseline_photo_camera_24"
-            android:backgroundTint="@color/black" />
     </LinearLayout>
 
     <LinearLayout
@@ -146,10 +150,13 @@
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_margin="20dp"
+        android:layout_gravity="bottom"
+
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="5dp"
         android:backgroundTint="@color/red"
-        android:background="@drawable/input_text_shape"
+        android:background="@drawable/button_custom"
         android:fontFamily="@font/poppins_medium"
         android:text="LOG OUT"
         android:textColor="@color/white"

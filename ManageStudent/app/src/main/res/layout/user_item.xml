@@ -1,97 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginHorizontal="8dp"
+android:layout_marginVertical="4dp"
+android:foreground="?android:attr/selectableItemBackground"
+android:clickable="true"
+android:focusable="true"
+app:cardCornerRadius="8dp"
+app:cardElevation="2dp">
+
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true"
-    android:id="@+id/idStudent">
+    android:padding="16dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/avt"
+        android:layout_gravity="center"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="20dp"
+        app:cardCornerRadius="100dp">
+        <ImageView
+            android:id="@+id/avtUserItem"
+            android:layout_gravity="center"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/book" />
+
+    </androidx.cardview.widget.CardView>
 
     <LinearLayout
-        android:padding="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/avt"
-            android:layout_gravity="center"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:cardCornerRadius="100dp">
-            <ImageView
-                android:id="@+id/avtUserItem"
-                android:layout_gravity="center"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/book" />
-
-        </androidx.cardview.widget.CardView>
-
-        <LinearLayout
-            android:paddingLeft="10dp"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Name"
-                android:textStyle="bold"
-                android:textSize="20dp"
-                android:layout_gravity="left"
-                android:id="@+id/tvNameUser" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Active"
-                android:textSize="16dp"
-                android:layout_marginTop="2dp"
-                android:layout_gravity="left"
-                android:id="@+id/tvStatus" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:paddingLeft="10dp"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
+            android:text="Name"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            android:layout_gravity="left"
+            android:id="@+id/tvNameUser" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Role"
+            android:textSize="16dp"
+            android:layout_marginTop="2dp"
+            android:layout_gravity="left"
+            android:id="@+id/tvRole" />
 
-            <ImageButton
-                android:id="@+id/btnViewHistory"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Edit"
-                android:src="@drawable/baseline_history_24" />
-
-            <ImageButton
-                android:id="@+id/btnEditUser"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:tint="@color/darkblue"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Edit"
-                android:src="@drawable/baseline_edit_24" />
-
-            <ImageButton
-                android:id="@+id/btnTrashUser"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/baseline_delete_forever_24"
-                android:contentDescription="Delete"
-                app:tint="@color/red"
-                android:background="?attr/selectableItemBackgroundBorderless" />
-        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Active"
+            android:textSize="16dp"
+            android:layout_marginTop="2dp"
+            android:layout_gravity="left"
+            android:id="@+id/tvStatus" />
     </LinearLayout>
+    <ImageButton
+        android:id="@+id/btnViewHistory"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Edit"
+        android:src="@drawable/baseline_history_24" />
+    <ImageButton
+        android:id="@+id/btnEditUser"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="12dp"
+        android:backgroundTint="@color/darkblue"
+        android:src="@android:drawable/ic_menu_edit"
+        android:contentDescription="Edit student"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#aaaaaa" />
-
+    <ImageButton
+        android:id="@+id/btnTrashUser"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="12dp"
+        android:backgroundTint="@color/red"
+        android:src="@android:drawable/ic_menu_delete"
+        android:contentDescription="Delete student"/>
 </LinearLayout>
+
+</androidx.cardview.widget.CardView>
