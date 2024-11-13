@@ -22,15 +22,7 @@
             android:layout_gravity="center"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:scaleType="centerCrop"
-             />
-        <ProgressBar
-            android:id="@+id/progressFistLoad"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:indeterminate="true"
-            android:layout_gravity="center"
-            android:visibility="gone" />
+            android:src="@drawable/book" />
 
     </androidx.cardview.widget.CardView>
 

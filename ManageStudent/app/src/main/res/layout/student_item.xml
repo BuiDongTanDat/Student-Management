@@ -1,106 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--<com.google.android.material.card.MaterialCardView-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_marginHorizontal="8dp"-->
+<!--    android:layout_marginVertical="4dp"-->
+<!--    app:cardCornerRadius="8dp"-->
+<!--    app:cardElevation="2dp">-->
+<!--    <RelativeLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:padding="12dp">-->
+<!--        <com.google.android.material.imageview.ShapeableImageView-->
+<!--            android:layout_width="60dp"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:id="@+id/studentImage"-->
+<!--            android:layout_alignParentStart="true"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:scaleType="centerCrop"-->
+<!--            android:src="@android:drawable/ic_menu_gallery"-->
+<!--            app:shapeAppearanceOverlay="@style/CircularImageView" />-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:layout_marginStart="16dp"-->
+<!--            android:layout_marginEnd="48dp"-->
+<!--            android:layout_toStartOf="@id/btnDelete"-->
+<!--            android:layout_toEndOf="@id/studentImage"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:id="@+id/studentName"-->
+<!--                android:text="Student Name"-->
+<!--                android:textColor="?android:textColorPrimary"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textStyle="bold" />-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:id="@+id/studentClass"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                android:text="Class"-->
+<!--                android:textColor="?android:textColorSecondary"-->
+<!--                android:textSize="14sp" />-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:id="@+id/studentEmail"-->
+<!--                android:layout_marginTop="2dp"-->
+<!--                android:text="email@example.com"-->
+<!--                android:textColor="?android:textColorSecondary"-->
+<!--                android:textSize="14sp" />-->
+
+<!--        </LinearLayout>-->
+
+<!--        <ImageButton-->
+<!--            android:layout_width="40dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:id="@+id/btnDelete"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--            android:contentDescription="Delete student"-->
+<!--            android:src="@android:drawable/ic_menu_delete"-->
+<!--            app:tint="@android:color/holo_red_light" />-->
+<!--    </RelativeLayout>-->
+<!--</com.google.android.material.card.MaterialCardView>-->
+
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true"
-    android:id="@+id/idStudent">
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
 
     <LinearLayout
-        android:padding="10dp"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/avt"
-            android:layout_gravity="center"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:cardCornerRadius="100dp">
-            <ImageView
-                android:id="@+id/avtUserItem"
-                android:layout_gravity="center"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/book" />
-
-        </androidx.cardview.widget.CardView>
+        <ImageView
+            android:id="@+id/studentImage"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
+            android:scaleType="centerCrop"/>
 
         <LinearLayout
-            android:paddingLeft="10dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/studentName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Name"
                 android:textStyle="bold"
-                android:textSize="20dp"
-                android:layout_gravity="left"
-                android:id="@+id/tvName" />
+                android:textSize="16sp"/>
 
             <TextView
+                android:id="@+id/studentClass"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="dd/MM/yyyy"
-                android:textSize="16dp"
-                android:layout_marginTop="2dp"
-                android:layout_gravity="left"
-                android:id="@+id/tvStudentBirth" />
+                android:textSize="14sp"/>
 
             <TextView
+                android:id="@+id/studentEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Faculty"
-                android:textSize="16dp"
-                android:layout_marginTop="2dp"
-                android:layout_gravity="left"
-                android:id="@+id/tvStudentFaculty" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="111 111 111"
-                android:textSize="16dp"
-                android:layout_marginTop="2dp"
-                android:layout_gravity="left"
-                android:id="@+id/tvStudentPhone" />
+                android:textSize="14sp"/>
         </LinearLayout>
 
-        <LinearLayout
-            android:paddingLeft="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/btnEdit"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_edit"
+            android:contentDescription="Edit student"/>
 
-            <ImageButton
-                android:id="@+id/btnEdit"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Edit"
-                android:src="@drawable/baseline_edit_24" />
-
-            <ImageButton
-                android:id="@+id/btnTrash"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/baseline_delete_forever_24"
-                android:contentDescription="Delete"
-                app:tint="@color/red"
-                android:background="?attr/selectableItemBackgroundBorderless" />
-        </LinearLayout>
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_delete"
+            android:contentDescription="Delete student"/>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#aaaaaa" />
-
-</LinearLayout>
+</androidx.cardview.widget.CardView>

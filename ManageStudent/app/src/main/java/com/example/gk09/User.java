@@ -3,19 +3,29 @@ package com.example.gk09;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    String  id, name, email, password, phone, role, image;
+    String name, email, password, phone, role, image;
     int age;
     boolean status;
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 
     public User(){}
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public User(String name, String email, String password, String phone, String role, String image, boolean status, int age) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.role = role;
+        this.status = status;
+        this.age = age;
+        this.image = image;
     }
 
     public String getName() {
@@ -58,14 +68,6 @@ public class User implements Serializable {
         this.role = role;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public int getAge() {
         return age;
     }
@@ -81,17 +83,4 @@ public class User implements Serializable {
     public void setStatus(boolean status) {
         this.status = status;
     }
-
-    public User(String id, String name, String email, String password, String phone, String role, String image, boolean status, int age) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.role = role;
-        this.status = status;
-        this.age = age;
-        this.image = image;
-    }
-
 }
