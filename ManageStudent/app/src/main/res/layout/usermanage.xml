@@ -15,7 +15,6 @@
         android:layout_weight="1"
         android:layout_margin="10dp">
 
-
     </androidx.recyclerview.widget.RecyclerView>
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnAddUser"
