@@ -1,6 +1,8 @@
 package com.example.gk09;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,10 +26,11 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     private static final String TAG = "StudentAdapter";
     private List<QueryDocumentSnapshot> studentList;
     private StudentManage activity;
-
-    public StudentAdapter(List<QueryDocumentSnapshot> studentList, StudentManage activity) {
+    private Context context;
+    public StudentAdapter(List<QueryDocumentSnapshot> studentList, StudentManage activity, Context context ) {
         this.studentList = studentList;
         this.activity = activity;
+        this.context = context;
     }
 
     @NonNull
@@ -63,6 +66,19 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             } else {
                 holder.studentImage.setImageResource(android.R.drawable.ic_menu_gallery);
             }
+
+            // Get role from SharedPreferences (if needed)
+            SharedPreferences sharedPreferences = context.getSharedPreferences("User Session", Context.MODE_PRIVATE);
+            String role = sharedPreferences.getString("role", null);
+
+            if (role != null) {
+                Log.d(TAG, "Role từ SharedPreferences: " + role);
+                if ("employee".equals(role)) {
+                    holder.btnEdit.setVisibility(View.GONE);
+                    holder.btnDelete.setVisibility(View.GONE);
+                }
+            }
+
 
             // Item click for view details
             holder.itemView.setOnClickListener(v -> {
@@ -114,6 +130,9 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         } catch (Exception e) {
             Log.e(TAG, "Error binding view holder: " + e.getMessage());
         }
+
+
+
     }
 
     @Override

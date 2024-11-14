@@ -12,15 +12,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:background="@color/white"
             android:padding="16dp">
 
             <!-- Student Information Card -->
             <androidx.cardview.widget.CardView
+                android:layout_margin="2dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -158,6 +161,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="8dp"
+                android:layout_margin="2dp"
                 app:cardElevation="4dp">
 
                 <LinearLayout

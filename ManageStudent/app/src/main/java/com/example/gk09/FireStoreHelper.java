@@ -161,8 +161,11 @@ public class FireStoreHelper {
 
 
     private String getCurrentDateTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault());
-        return sdf.format(new Date());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH-mm:ss", Locale.getDefault());
+        String date = dateFormat.format(new Date());
+        String time = timeFormat.format(new Date());
+        return "Date: " + date + "    Time: " + time;
     }
 
     //Load login history

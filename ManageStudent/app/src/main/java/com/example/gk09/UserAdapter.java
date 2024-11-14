@@ -3,6 +3,7 @@ package com.example.gk09;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,10 +29,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     FireStoreHelper fireStoreHelper = new FireStoreHelper();
     private String currRole;
 
-    public UserAdapter(List<User> userList, Context context, String currRole) {
+    public UserAdapter(List<User> userList, Context context) {
         this.userList = userList;
         this.context = context;
-        this.currRole = currRole;
     }
 
     @NonNull
@@ -117,9 +117,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             context.startActivity(intent);
         });
 
-        if (!currRole.equals("admin")) {
-            holder.btnEditUser.setVisibility(View.GONE);
-            holder.btnTrashUser.setVisibility(View.GONE);
+        // Get role from SharedPreferences (if needed)
+        SharedPreferences sharedPreferences = context.getSharedPreferences("User Session", Context.MODE_PRIVATE);
+        String role = sharedPreferences.getString("role", null);
+
+        if (role != null) {
+            if (!"admin".equals(role)) {
+                holder.btnEditUser.setVisibility(View.GONE);
+                holder.btnTrashUser.setVisibility(View.GONE);
+            }
         }
 
 

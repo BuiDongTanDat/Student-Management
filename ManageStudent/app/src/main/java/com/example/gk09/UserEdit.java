@@ -1,6 +1,7 @@
 package com.example.gk09;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -210,6 +211,9 @@ public class UserEdit extends AppCompatActivity {
         }
 
         // Check the current role and enable/disable fields accordingly
+        SharedPreferences sharedPreferences = getSharedPreferences("User Session", MODE_PRIVATE);
+        currRole = sharedPreferences.getString("role", null);
+
         if ("admin".equals(currRole)) {
             enableAllFields();
 

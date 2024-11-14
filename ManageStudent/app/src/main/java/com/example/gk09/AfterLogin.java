@@ -71,16 +71,13 @@ public class AfterLogin extends AppCompatActivity {
         avtUser.setOnClickListener(view -> {
             Intent intent = new Intent(AfterLogin.this, UserProfile.class);
             user = new User(uid,displayName, email, password, phone, role, imageUrl, status, age);
-            Log.d("Pas", user.getPassword());
             intent.putExtra("user", user);
-            Log.d("Pass", user.getPassword());
             startActivity(intent);
         });
 
         goUser.setOnClickListener(view -> {
             Intent intent = new Intent(AfterLogin.this, UserManage.class);
             intent.putExtra("uid", uid);
-            intent.putExtra("currRole", roleSession);
             startActivity(intent);
         });
 
@@ -112,7 +109,11 @@ public class AfterLogin extends AppCompatActivity {
                     email = user.getEmail();
                     nameLogin.setText(displayName);
 
-                    roleSession = user.getRole();
+                    // Lưu role vào SharedPreferences
+                    SharedPreferences sharedPreferences = getSharedPreferences("User Session", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("role", role); // Lưu role vào SharedPreferences
+                    editor.apply();
 
                     if (imageUrl != null && !imageUrl.isEmpty()) {
                         Glide.with(AfterLogin.this).load(imageUrl).into(avtUser );

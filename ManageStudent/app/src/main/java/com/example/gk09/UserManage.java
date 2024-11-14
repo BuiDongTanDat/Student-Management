@@ -1,9 +1,13 @@
 package com.example.gk09;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -29,9 +33,10 @@ public class UserManage extends AppCompatActivity {
     private UserAdapter userAdapter;
     private ProgressBar progressBarLoadUser;
     private List<User> userList;
-    private String uid, currRole;
+    private String uid;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,18 +52,85 @@ public class UserManage extends AppCompatActivity {
 
         Intent intent = getIntent();
         uid = intent.getStringExtra("uid");
-        currRole = intent.getStringExtra("currRole");
-        Log.d("UserManage", "Received UID: " + currRole);
+
 
         userList = new ArrayList<>();
-        userAdapter = new UserAdapter(userList, this, currRole);
+        userAdapter = new UserAdapter(userList, this);
         viewUser .setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         viewUser .setAdapter(userAdapter);
 
-        if (!currRole.equals("admin")) {
+        // Get role from SharedPreferences (if needed)
+        SharedPreferences sharedPreferences = getSharedPreferences("User Session", Context.MODE_PRIVATE);
+        String role = sharedPreferences.getString("role", null);
+
+
+
+        if (!role.equals("admin")) {
             btnAddUser .setVisibility(View.GONE);
         } else {
             btnAddUser.setVisibility(View.VISIBLE);
+
+            btnAddUser .setOnTouchListener(new View.OnTouchListener() {
+                float dX, dY;
+                boolean isDragging = false; // Track if we are dragging
+                final float CLICK_THRESHOLD = 10; // Threshold for distinguishing click and drag
+
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            // Store the difference between the button's position and the touch position
+                            dX = view.getX() - event.getRawX();
+                            dY = view.getY() - event.getRawY();
+                            isDragging = false; // Reset dragging flag
+                            break;
+
+                        case MotionEvent.ACTION_MOVE:
+                            // Update the button's position
+                            float newX = event.getRawX() + dX;
+                            float newY = event.getRawY() + dY;
+
+                            // Get the dimensions of the parent view
+                            int parentWidth = ((View) view.getParent()).getWidth();
+                            int parentHeight = ((View) view.getParent()).getHeight();
+
+                            // Set boundaries
+                            float minX = 0;
+                            float maxX = parentWidth - view.getWidth();
+                            float minY = 0;
+                            float maxY = parentHeight - view.getHeight();
+
+                            // Check if the movement exceeds the threshold
+                            if (Math.abs(newX - view.getX()) > CLICK_THRESHOLD || Math.abs(newY - view.getY()) > CLICK_THRESHOLD) {
+                                isDragging = true; // Set dragging flag if we are dragging
+                            }
+
+                            // Constrain the new position within the parent view's bounds
+                            newX = Math.max(minX, Math.min(newX, maxX));
+                            newY = Math.max(minY, Math.min(newY, maxY));
+
+                            // Move the button
+                            view.animate()
+                                    .x(newX)
+                                    .y(newY)
+                                    .setDuration(0)
+                                    .start();
+                            break;
+
+                        case MotionEvent.ACTION_UP:
+                            // If we were not dragging, treat it as a click
+                            if (!isDragging) {
+                                view.performClick(); // This will trigger the click listener
+                            }
+                            break;
+
+                        default:
+                            return false;
+                    }
+                    return true;
+                }
+            });
+
             btnAddUser.setOnClickListener(v -> {
                 Intent intent1 = new Intent(UserManage.this, UserAdd.class);
                 startActivityForResult(intent1, 222);

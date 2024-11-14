@@ -106,6 +106,7 @@ public class UserProfile extends AppCompatActivity {
                                 SharedPreferences sharedPreferences = getSharedPreferences("User Session", MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.remove("uid");
+                                editor.remove("role");
                                 editor.apply();
 
                                 // Chuyển về màn hình đăng nhập (MainActivity)
@@ -145,6 +146,7 @@ public class UserProfile extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == EDIT_REQUEST && resultCode == RESULT_OK && data != null) {
+            processBarUP.setVisibility(View.VISIBLE);
             User updatedUser = (User ) data.getSerializableExtra("updatedUser");
             if (updatedUser != null) {
                 // Update the UI with the new user data
@@ -166,12 +168,14 @@ public class UserProfile extends AppCompatActivity {
                 currUser  = updatedUser ; // Update the current user reference
 
                 // Load updated image if available
+
                 if (updatedUser.getImage() != null) {
                     Glide.with(UserProfile.this).load(updatedUser .getImage()).into(avtUserUP);
                 } else {
                     avtUserUP.setImageResource(R.drawable.avtdf); // Default image
                 }
             }
+            processBarUP.setVisibility(View.GONE);
         }
     }
 

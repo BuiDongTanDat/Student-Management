@@ -3,6 +3,7 @@ package com.example.gk09;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,6 +36,12 @@ public class AddCertificate extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_certificate);
+
+        // Enable the back button in the action bar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Add Certificate");
+        }
 
         // Get student ID
         studentId = getIntent().getStringExtra("studentId");
@@ -113,7 +120,7 @@ public class AddCertificate extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error adding certificate: " + e.getMessage(), e);
+                    Log.e(TAG, "Error adding certificate", e);
                     progressBar.setVisibility(View.GONE);
                     btnSave.setEnabled(true);
                     Toast.makeText(this, "Error adding certificate: " + e.getMessage(),
@@ -148,8 +155,18 @@ public class AddCertificate extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // Handle back button click
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onBackPressed() {
-        setResult(RESULT_CANCELED);
+        Log.d(TAG, "Back pressed");
         super.onBackPressed();
     }
 

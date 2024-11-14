@@ -2,6 +2,7 @@ package com.example.gk09;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +25,13 @@ public class CertificateAdapter extends RecyclerView.Adapter<CertificateAdapter.
     private List<QueryDocumentSnapshot> certificateList;
     private StudentDetails activity;
     private SimpleDateFormat dateFormat;
+    private Context context;
 
-    public CertificateAdapter(List<QueryDocumentSnapshot> certificateList, StudentDetails activity) {
+    public CertificateAdapter(List<QueryDocumentSnapshot> certificateList, StudentDetails activity, Context context) {
         this.certificateList = certificateList;
         this.activity = activity;
         this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        this.context = context;
     }
 
     @NonNull
@@ -48,6 +51,19 @@ public class CertificateAdapter extends RecyclerView.Adapter<CertificateAdapter.
             holder.tvIssuedBy.setText(certificate.getIssuedBy());
             if (certificate.getIssueDate() != null) {
                 holder.tvIssueDate.setText(dateFormat.format(certificate.getIssueDate()));
+            }
+
+
+            // Get role from SharedPreferences (if needed)
+            SharedPreferences sharedPreferences = context.getSharedPreferences("User Session", Context.MODE_PRIVATE);
+            String role = sharedPreferences.getString("role", null);
+
+            if (role != null) {
+                Log.d(TAG, "Role từ SharedPreferences: " + role);
+                if ("employee".equals(role)) {
+                    holder.btnEdit.setVisibility(View.GONE);
+                    holder.btnDelete.setVisibility(View.GONE);
+                }
             }
 
             // Edit button click handler

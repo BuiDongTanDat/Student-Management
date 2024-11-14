@@ -1,10 +1,18 @@
 package com.example.gk09;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -41,6 +49,9 @@ public class StudentManage extends AppCompatActivity {
     private ImageButton btnSort;
     private EditText searchEditText;
     private CheckBox checkName, checkClass, checkEmail;
+    private static final int PICK_CSV_FILE = 1;
+    private DataImportExport dataImportExport;
+    String role;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +74,11 @@ public class StudentManage extends AppCompatActivity {
             checkName = findViewById(R.id.checkName);
             checkClass = findViewById(R.id.checkClass);
             checkEmail = findViewById(R.id.checkEmail);
+            dataImportExport = new DataImportExport(this);
             Log.d("StudentManage", "Views initialized");
 
             studentList = new ArrayList<>();
-            studentAdapter = new StudentAdapter(studentList, this);
+            studentAdapter = new StudentAdapter(studentList, this, this);
             Log.d("StudentManage", "Adapter initialized");
 
             viewStudent.setLayoutManager(new LinearLayoutManager(this));
@@ -103,6 +115,23 @@ public class StudentManage extends AppCompatActivity {
                 performSearch(s.toString());
             }
         });
+
+        SharedPreferences sharedPreferences = getSharedPreferences("User Session", MODE_PRIVATE);
+        role = sharedPreferences.getString("role", null);
+
+        // Kiểm tra role và xử lý tùy theo role của người dùng
+        if (role != null) {
+            Log.d("StudentManage", "Role của người dùng: " + role);
+            if ("employee".equals(role)) {
+                btnAddStudent.setVisibility(View.GONE);
+            } else {
+                btnAddStudent.setVisibility(View.VISIBLE);
+            }
+        } else {
+            Log.d("StudentManage", "Không có role trong SharedPreferences.");
+        }
+
+
     }
 
     private void fetchStudentsFromFirestore() {
@@ -326,6 +355,75 @@ public class StudentManage extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_student_manage, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.menu_import_students) {
+            openFilePicker();
+            return true;
+        } else if (id == R.id.menu_export_students) {
+            exportStudents();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_CSV_FILE && resultCode == Activity.RESULT_OK) {
+            if (data != null && data.getData() != null) {
+                importStudents(data.getData());
+            }
+        }
+    }
+
+    private void importStudents(Uri fileUri) {
+        dataImportExport.importStudents(fileUri, new DataImportExport.ImportCallback() {
+            @Override
+            public void onSuccess(String message) {
+                Toast.makeText(StudentManage.this, message, Toast.LENGTH_SHORT).show();
+                fetchStudentsFromFirestore(); // Refresh list
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(StudentManage.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void exportStudents() {
+        dataImportExport.exportStudents(new DataImportExport.ExportCallback() {
+            @Override
+            public void onSuccess(String filePath) {
+                Toast.makeText(StudentManage.this,
+                        "Students exported to: " + filePath, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(StudentManage.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void openFilePicker() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/*");
+        startActivityForResult(intent, PICK_CSV_FILE);
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
     }
@@ -341,5 +439,25 @@ public class StudentManage extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         fetchStudentsFromFirestore();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuItem importMenuItem = menu.findItem(R.id.menu_import_students);
+        MenuItem exportMenuItem = menu.findItem(R.id.menu_export_students);
+        SharedPreferences sharedPreferences = getSharedPreferences("User Session", MODE_PRIVATE);
+        String role = sharedPreferences.getString("role", "guest");
+
+        if ("employee".equals(role)) {
+            importMenuItem.setVisible(false);  // Ẩn menu item
+            exportMenuItem.setVisible(false);
+        } else {
+            importMenuItem.setVisible(true);   // Hiển thị lại menu item
+            exportMenuItem.setVisible(true);
+        }
+
+        return true;
     }
 }
