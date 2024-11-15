@@ -23,11 +23,11 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHolder> {
-    private static final String TAG = "StudentAdapter";
     private List<QueryDocumentSnapshot> studentList;
     private StudentManage activity;
     private Context context;
-    public StudentAdapter(List<QueryDocumentSnapshot> studentList, StudentManage activity, Context context ) {
+
+    public StudentAdapter(List<QueryDocumentSnapshot> studentList, StudentManage activity, Context context) {
         this.studentList = studentList;
         this.activity = activity;
         this.context = context;
@@ -36,7 +36,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     @NonNull
     @Override
     public StudentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(activity)
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.student_item, parent, false);
         return new StudentViewHolder(view);
     }
@@ -45,18 +45,18 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     public void onBindViewHolder(@NonNull StudentViewHolder holder, int position) {
         try {
             QueryDocumentSnapshot document = studentList.get(position);
+            String studentId = document.getId();
 
             String name = document.getString("name");
-            String studentClass = document.getString("studentClass");
-            String email = document.getString("email");
-            String imageUrl = document.getString("imageUrl");
-
-            // Set basic info
             holder.studentName.setText(name != null ? name : "No Name");
+
+            String studentClass = document.getString("studentClass");
             holder.studentClass.setText(studentClass != null ? studentClass : "No Class");
+
+            String email = document.getString("email");
             holder.studentEmail.setText(email != null ? email : "No Email");
 
-            // Handle image
+            String imageUrl = document.getString("imageUrl");
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 Picasso.get()
                         .load(imageUrl)
@@ -67,72 +67,48 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
                 holder.studentImage.setImageResource(android.R.drawable.ic_menu_gallery);
             }
 
-            // Get role from SharedPreferences (if needed)
-            SharedPreferences sharedPreferences = context.getSharedPreferences("User Session", Context.MODE_PRIVATE);
-            String role = sharedPreferences.getString("role", null);
-
-            if (role != null) {
-                Log.d(TAG, "Role từ SharedPreferences: " + role);
-                if ("employee".equals(role)) {
-                    holder.btnEdit.setVisibility(View.GONE);
-                    holder.btnDelete.setVisibility(View.GONE);
-                }
-            }
-
-
-            // Item click for view details
-            holder.itemView.setOnClickListener(v -> {
-                try {
-                    Intent intent = new Intent(activity, StudentDetails.class);
-                    intent.putExtra("studentId", document.getId());
-                    intent.putExtra("name", name);
-                    intent.putExtra("studentClass", studentClass);
-                    intent.putExtra("email", email);
-                    intent.putExtra("phone", document.getString("phone"));
-                    intent.putExtra("address", document.getString("address"));
-                    if (document.contains("age")) {
-                        intent.putExtra("age", document.getLong("age"));
-                    }
-                    activity.startActivity(intent);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error opening details: " + e.getMessage());
-                    Toast.makeText(activity, "Error viewing student details", Toast.LENGTH_SHORT).show();
-                }
+            // Handle card click for viewing details
+            holder.cardView.setOnClickListener(v -> {
+                Intent intent = new Intent(activity, StudentDetails.class);
+                intent.putExtra("studentId", studentId);
+                intent.putExtra("name", document.getString("name"));
+                intent.putExtra("studentClass", document.getString("studentClass"));
+                intent.putExtra("email", document.getString("email"));
+                intent.putExtra("phone", document.getString("phone"));
+                intent.putExtra("address", document.getString("address"));
+                Long age = document.getLong("age");
+                intent.putExtra("age", age != null ? age : 0L);
+                activity.startActivity(intent);
             });
 
             // Handle edit button click
             holder.btnEdit.setOnClickListener(v -> {
-                try {
-                    Intent intent = new Intent(activity, UpdateStudent.class);
-                    intent.putExtra("studentId", document.getId());
-                    intent.putExtra("name", name);
-                    intent.putExtra("studentClass", studentClass);
-                    intent.putExtra("email", email);
-                    intent.putExtra("phone", document.getString("phone"));
-                    intent.putExtra("address", document.getString("address"));
-                    if (document.contains("age")) {
-                        intent.putExtra("age", document.getLong("age"));
-                    }
-                    activity.startActivity(intent);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error launching edit: " + e.getMessage());
-                    Toast.makeText(activity, "Error editing student", Toast.LENGTH_SHORT).show();
-                }
+                Intent intent = new Intent(activity, UpdateStudent.class);
+                intent.putExtra("studentId", studentId);
+                intent.putExtra("name", document.getString("name"));
+                intent.putExtra("studentClass", document.getString("studentClass"));
+                intent.putExtra("email", document.getString("email"));
+                intent.putExtra("phone", document.getString("phone"));
+                intent.putExtra("address", document.getString("address"));
+                Long age = document.getLong("age");
+                intent.putExtra("age", age != null ? age : 0L);
+                activity.startActivity(intent);
             });
 
-            // Handle delete button click
             holder.btnDelete.setOnClickListener(v -> {
-                if (activity != null) {
-                    activity.showDeleteConfirmation(document.getId());
-                }
+                activity.showDeleteConfirmation(studentId);
             });
 
         } catch (Exception e) {
-            Log.e(TAG, "Error binding view holder: " + e.getMessage());
+            Log.e("StudentAdapter", "Error binding view holder: " + e.getMessage());
         }
 
-
-
+        SharedPreferences sharedPreferences = context.getSharedPreferences("User Session", Context.MODE_PRIVATE);
+        String role = sharedPreferences.getString("role", null);
+        if (role != null && role.equals("employee")) {
+            holder.btnEdit.setVisibility(View.GONE);
+            holder.btnDelete.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -144,14 +120,16 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         TextView studentName, studentClass, studentEmail;
         ImageView studentImage;
         ImageButton btnEdit, btnDelete;
+        CardView cardView;
 
         StudentViewHolder(View itemView) {
             super(itemView);
+            cardView = itemView.findViewById(R.id.cardView); // Make sure to add this ID to your layout
             studentName = itemView.findViewById(R.id.studentName);
             studentClass = itemView.findViewById(R.id.studentClass);
             studentEmail = itemView.findViewById(R.id.studentEmail);
             studentImage = itemView.findViewById(R.id.studentImage);
-            btnEdit = itemView.findViewById(R.id.btnEdit);  // Make sure this ID matches your layout
+            btnEdit = itemView.findViewById(R.id.btnEdit); // Make sure to add this ID to your layout
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }

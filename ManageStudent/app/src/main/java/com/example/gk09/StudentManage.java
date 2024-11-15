@@ -1,8 +1,11 @@
 package com.example.gk09;
 
-import android.app.Activity;
+import android.Manifest;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,8 +23,10 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,7 +56,7 @@ public class StudentManage extends AppCompatActivity {
     private CheckBox checkName, checkClass, checkEmail;
     private static final int PICK_CSV_FILE = 1;
     private DataImportExport dataImportExport;
-    String role;
+    private static final int STORAGE_PERMISSION_CODE = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,21 +122,10 @@ public class StudentManage extends AppCompatActivity {
         });
 
         SharedPreferences sharedPreferences = getSharedPreferences("User Session", MODE_PRIVATE);
-        role = sharedPreferences.getString("role", null);
-
-        // Kiểm tra role và xử lý tùy theo role của người dùng
-        if (role != null) {
-            Log.d("StudentManage", "Role của người dùng: " + role);
-            if ("employee".equals(role)) {
-                btnAddStudent.setVisibility(View.GONE);
-            } else {
-                btnAddStudent.setVisibility(View.VISIBLE);
-            }
-        } else {
-            Log.d("StudentManage", "Không có role trong SharedPreferences.");
+        String role = sharedPreferences.getString("role", null);
+        if (role != null && role.equals("employee")) {
+            btnAddStudent.setVisibility(View.GONE);
         }
-
-
     }
 
     private void fetchStudentsFromFirestore() {
@@ -354,8 +348,21 @@ public class StudentManage extends AppCompatActivity {
                 });
     }
 
+    private void setupRecyclerView() {
+        studentList = new ArrayList<>();
+        studentAdapter = new StudentAdapter(studentList, this, this);  // Only pass two arguments
+        viewStudent.setLayoutManager(new LinearLayoutManager(this));
+        viewStudent.setAdapter(studentAdapter);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        SharedPreferences sharedPreferences = getSharedPreferences("User Session", Context.MODE_PRIVATE);
+        String role = sharedPreferences.getString("role", null);
+        // If the role is 'employee', do not show any options
+        if (role != null && role.equals("employee")) {
+            return false;  // Do not show the menu
+        }
         getMenuInflater().inflate(R.menu.menu_student_manage, menu);
         return true;
     }
@@ -364,10 +371,10 @@ public class StudentManage extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.menu_import_students) {
-            openFilePicker();
+        if (id == R.id.action_import_students) {
+            importStudents();
             return true;
-        } else if (id == R.id.menu_export_students) {
+        } else if (id == R.id.action_export_students) {
             exportStudents();
             return true;
         }
@@ -375,52 +382,133 @@ public class StudentManage extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_CSV_FILE && resultCode == Activity.RESULT_OK) {
-            if (data != null && data.getData() != null) {
-                importStudents(data.getData());
+    // Add method to check and request permissions
+    private boolean checkStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // For Android 11 and above
+            return Environment.isExternalStorageManager();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // For Android 6.0 to Android 10
+            return checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED;
+        }
+        return true;
+    }
+    private void requestStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // For Android 11 and above
+            try {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                intent.addCategory("android.intent.category.DEFAULT");
+                intent.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
+                startActivityForResult(intent, STORAGE_PERMISSION_CODE);
+            } catch (Exception e) {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                startActivityForResult(intent, STORAGE_PERMISSION_CODE);
             }
+        } else {
+            // For Android 6.0 to Android 10
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    },
+                    STORAGE_PERMISSION_CODE
+            );
         }
     }
 
-    private void importStudents(Uri fileUri) {
-        dataImportExport.importStudents(fileUri, new DataImportExport.ImportCallback() {
-            @Override
-            public void onSuccess(String message) {
-                Toast.makeText(StudentManage.this, message, Toast.LENGTH_SHORT).show();
-                fetchStudentsFromFirestore(); // Refresh list
-            }
+    private void importStudents() {
+        if (!checkStoragePermission()) {
+            requestStoragePermission();
+            return;
+        }
 
-            @Override
-            public void onError(String error) {
-                Toast.makeText(StudentManage.this, error, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        String[] mimeTypes = {"text/csv", "text/comma-separated-values", "application/csv"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        try {
+            startActivityForResult(
+                    Intent.createChooser(intent, "Select CSV File"),
+                    PICK_CSV_FILE
+            );
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "Please install a file manager app", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                importStudents();
+            } else {
+                Toast.makeText(this,
+                        "Storage permission is required to import/export files",
+                        Toast.LENGTH_LONG).show();
             }
-        });
+        }
     }
 
     private void exportStudents() {
         dataImportExport.exportStudents(new DataImportExport.ExportCallback() {
             @Override
             public void onSuccess(String filePath) {
-                Toast.makeText(StudentManage.this,
-                        "Students exported to: " + filePath, Toast.LENGTH_LONG).show();
+                runOnUiThread(() -> {
+                    Toast.makeText(StudentManage.this,
+                            "Students exported to: " + filePath, Toast.LENGTH_LONG).show();
+                });
             }
 
             @Override
             public void onError(String error) {
-                Toast.makeText(StudentManage.this, error, Toast.LENGTH_SHORT).show();
+                runOnUiThread(() -> {
+                    Toast.makeText(StudentManage.this, error, Toast.LENGTH_SHORT).show();
+                });
             }
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    importStudents();
+                } else {
+                    Toast.makeText(this,
+                            "Storage permission is required to import/export files",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        } else if (requestCode == PICK_CSV_FILE && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            if (uri != null) {
+                dataImportExport.importStudents(uri, new DataImportExport.ImportCallback() {
+                    @Override
+                    public void onSuccess(String message) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(StudentManage.this, message, Toast.LENGTH_LONG).show();
+                            fetchStudentsFromFirestore();
+                        });
+                    }
 
-    private void openFilePicker() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("text/*");
-        startActivityForResult(intent, PICK_CSV_FILE);
+                    @Override
+                    public void onError(String error) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(StudentManage.this, error, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
+            }
+        }
     }
 
     @Override
@@ -439,25 +527,5 @@ public class StudentManage extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         fetchStudentsFromFirestore();
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        MenuItem importMenuItem = menu.findItem(R.id.menu_import_students);
-        MenuItem exportMenuItem = menu.findItem(R.id.menu_export_students);
-        SharedPreferences sharedPreferences = getSharedPreferences("User Session", MODE_PRIVATE);
-        String role = sharedPreferences.getString("role", "guest");
-
-        if ("employee".equals(role)) {
-            importMenuItem.setVisible(false);  // Ẩn menu item
-            exportMenuItem.setVisible(false);
-        } else {
-            importMenuItem.setVisible(true);   // Hiển thị lại menu item
-            exportMenuItem.setVisible(true);
-        }
-
-        return true;
     }
 }

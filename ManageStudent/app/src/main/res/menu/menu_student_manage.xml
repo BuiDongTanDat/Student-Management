@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_import_students"
+        android:id="@+id/action_import_students"
+        android:icon="@android:drawable/ic_input_get"
         android:title="Import Students"
-        android:icon="@android:drawable/ic_menu_upload"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
     <item
-        android:id="@+id/menu_export_students"
+        android:id="@+id/action_export_students"
+        android:icon="@android:drawable/ic_menu_upload"
         android:title="Export Students"
-        android:icon="@android:drawable/ic_menu_save"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 </menu>

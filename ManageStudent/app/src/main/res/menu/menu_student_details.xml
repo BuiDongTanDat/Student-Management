@@ -3,16 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_import_certificates"
+        android:id="@id/action_import_certificates"
+        android:icon="@android:drawable/ic_input_get"
         android:title="Import Certificates"
-        android:icon="@android:drawable/ic_menu_upload"
-        android:visible="false"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
     <item
-        android:id="@+id/menu_export_certificates"
+        android:id="@id/action_export_certificates"
+        android:icon="@android:drawable/ic_menu_upload"
         android:title="Export Certificates"
-        android:icon="@android:drawable/ic_menu_save"
-        android:visible="false"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 </menu>

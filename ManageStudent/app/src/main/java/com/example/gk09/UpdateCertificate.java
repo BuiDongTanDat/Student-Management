@@ -2,6 +2,7 @@ package com.example.gk09;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,6 +36,12 @@ public class UpdateCertificate extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_certificate);
+
+        // Enable back button in action bar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Update Certificate");
+        }
 
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();
@@ -156,5 +163,20 @@ public class UpdateCertificate extends AppCompatActivity {
                     Toast.makeText(this, "Error updating certificate: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // Handle back button click
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

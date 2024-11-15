@@ -178,10 +178,29 @@
                         android:textStyle="bold"
                         android:layout_marginBottom="16dp"/>
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/certificateRecyclerView"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:minHeight="100dp">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/certificateRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"
+                            android:visibility="visible"
+                            android:clipToPadding="false"
+                            android:paddingBottom="8dp"/>
+
+                        <TextView
+                            android:id="@+id/tvNoCertificates"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="No certificates found"
+                            android:visibility="gone"/>
+
+                    </FrameLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>

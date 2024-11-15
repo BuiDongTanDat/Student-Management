@@ -58,11 +58,13 @@ dependencies {
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
-
-    implementation(libs.glide)
-    implementation(libs.cloudinary.android)
+    implementation (libs.glide)
     annotationProcessor (libs.compiler)
+    implementation (libs.cloudinary.android)
     implementation (libs.cloudinary.android.download)
     implementation (libs.cloudinary.android.preprocess)
     implementation("com.opencsv:opencsv:5.5")
+
+
+
 }

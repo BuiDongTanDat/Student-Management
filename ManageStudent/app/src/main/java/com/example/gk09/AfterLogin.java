@@ -85,7 +85,6 @@ public class AfterLogin extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(AfterLogin.this, StudentManage.class);
-                intent.putExtra("currRole", roleSession);
                 startActivity(intent);
             }
         });

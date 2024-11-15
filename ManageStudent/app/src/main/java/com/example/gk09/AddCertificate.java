@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 public class AddCertificate extends AppCompatActivity {
 
-    private static final String TAG = "AddCertificateActivity";
+    private static final String TAG = "AddCertificate";
     private EditText editCertificateName, editDescription, editIssuedBy;
     private Button btnIssueDatePicker, btnExpiryDatePicker, btnSave;
     private ProgressBar progressBar;
@@ -34,36 +35,33 @@ public class AddCertificate extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_certificate);
+        try {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_add_certificate);
 
-        // Enable the back button in the action bar
-        if (getSupportActionBar() != null) {
+            // Enable back button in action bar
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("Add Certificate");
-        }
 
-        // Get student ID
-        studentId = getIntent().getStringExtra("studentId");
-        Log.d(TAG, "Received studentId: " + studentId);
+            studentId = getIntent().getStringExtra("studentId");
+            if (studentId == null || studentId.isEmpty()) {
+                Log.e(TAG, "No student ID provided");
+                Toast.makeText(this, "Error: No student ID provided", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
 
-        if (studentId == null) {
-            Log.e(TAG, "No student ID provided");
-            Toast.makeText(this, "Error: Student ID not found", Toast.LENGTH_SHORT).show();
+            db = FirebaseFirestore.getInstance();
+            dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+
+            initializeViews();
+            setupButtons();
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error in onCreate: " + e.getMessage(), e);
+            Toast.makeText(this, "Error initializing: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             finish();
-            return;
         }
-
-        // Initialize
-        db = FirebaseFirestore.getInstance();
-        dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-
-        initializeViews();
-        setupButtons();
-
-        // Set default issue date to today
-        issueDate = Calendar.getInstance().getTime();
-        btnIssueDatePicker.setText(dateFormat.format(issueDate));
     }
 
     private void initializeViews() {
@@ -74,6 +72,9 @@ public class AddCertificate extends AppCompatActivity {
         btnExpiryDatePicker = findViewById(R.id.btnExpiryDatePicker);
         btnSave = findViewById(R.id.btnSave);
         progressBar = findViewById(R.id.progressBar);
+
+        btnIssueDatePicker.setText("SELECT ISSUE DATE");
+        btnExpiryDatePicker.setText("SELECT EXPIRY DATE (OPTIONAL)");
     }
 
     private void setupButtons() {
@@ -82,17 +83,56 @@ public class AddCertificate extends AppCompatActivity {
         btnSave.setOnClickListener(v -> saveCertificate());
     }
 
+    private void showDatePicker(boolean isIssueDate) {
+        Calendar calendar = Calendar.getInstance();
+        if (isIssueDate && issueDate != null) {
+            calendar.setTime(issueDate);
+        } else if (!isIssueDate && expiryDate != null) {
+            calendar.setTime(expiryDate);
+        }
+
+        DatePickerDialog picker = new DatePickerDialog(this,
+                (view, year, month, dayOfMonth) -> {
+                    Calendar selectedDate = Calendar.getInstance();
+                    selectedDate.set(year, month, dayOfMonth);
+                    if (isIssueDate) {
+                        issueDate = selectedDate.getTime();
+                        btnIssueDatePicker.setText(dateFormat.format(issueDate));
+                        // Update expiry date min date
+                        if (expiryDate != null && expiryDate.before(issueDate)) {
+                            expiryDate = null;
+                            btnExpiryDatePicker.setText("SELECT EXPIRY DATE (OPTIONAL)");
+                        }
+                    } else {
+                        expiryDate = selectedDate.getTime();
+                        btnExpiryDatePicker.setText(dateFormat.format(expiryDate));
+                    }
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
+
+        if (isIssueDate) {
+            picker.getDatePicker().setMaxDate(System.currentTimeMillis());
+        } else if (issueDate != null) {
+            picker.getDatePicker().setMinDate(issueDate.getTime());
+        }
+
+        picker.show();
+    }
+
     private void saveCertificate() {
         String name = editCertificateName.getText().toString().trim();
         String description = editDescription.getText().toString().trim();
         String issuedBy = editIssuedBy.getText().toString().trim();
 
         if (name.isEmpty()) {
-            editCertificateName.setError("Certificate name is required");
+            editCertificateName.setError("Name is required");
             return;
         }
-        if (issuedBy.isEmpty()) {
-            editIssuedBy.setError("Issuer is required");
+
+        if (issueDate == null) {
+            Toast.makeText(this, "Please select issue date", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -104,10 +144,10 @@ public class AddCertificate extends AppCompatActivity {
         certificate.put("description", description);
         certificate.put("issuedBy", issuedBy);
         certificate.put("issueDate", issueDate);
-        certificate.put("createAt", Calendar.getInstance().getTime());
         if (expiryDate != null) {
             certificate.put("expiryDate", expiryDate);
         }
+        certificate.put("timestamp", FieldValue.serverTimestamp());
 
         db.collection("students")
                 .document(studentId)
@@ -115,49 +155,20 @@ public class AddCertificate extends AppCompatActivity {
                 .add(certificate)
                 .addOnSuccessListener(documentReference -> {
                     Log.d(TAG, "Certificate added with ID: " + documentReference.getId());
-                    Toast.makeText(this, "Certificate added successfully", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error adding certificate", e);
+                    Log.e(TAG, "Error adding certificate: " + e.getMessage(), e);
                     progressBar.setVisibility(View.GONE);
                     btnSave.setEnabled(true);
-                    Toast.makeText(this, "Error adding certificate: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-    }
-
-    private void showDatePicker(boolean isIssueDate) {
-        Calendar calendar = Calendar.getInstance();
-        if (isIssueDate && issueDate != null) {
-            calendar.setTime(issueDate);
-        } else if (!isIssueDate && expiryDate != null) {
-            calendar.setTime(expiryDate);
-        }
-
-        new DatePickerDialog(this,
-                (view, year, month, dayOfMonth) -> {
-                    Calendar selectedDate = Calendar.getInstance();
-                    selectedDate.set(year, month, dayOfMonth);
-                    if (isIssueDate) {
-                        issueDate = selectedDate.getTime();
-                        btnIssueDatePicker.setText(dateFormat.format(issueDate));
-                    } else {
-                        expiryDate = selectedDate.getTime();
-                        btnExpiryDatePicker.setText(dateFormat.format(expiryDate));
-                    }
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH))
-                .show();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            // Handle back button click
             onBackPressed();
             return true;
         }
@@ -166,8 +177,7 @@ public class AddCertificate extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Log.d(TAG, "Back pressed");
+        setResult(RESULT_CANCELED);
         super.onBackPressed();
     }
-
 }

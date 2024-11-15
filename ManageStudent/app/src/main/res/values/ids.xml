@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Student Management Menu Items -->
+    <item name="action_import_students" type="id"/>
+    <item name="action_export_students" type="id"/>
+
+    <!-- Certificate Management Menu Items -->
+    <item name="action_import_certificates" type="id"/>
+    <item name="action_export_certificates" type="id"/>
+</resources>
