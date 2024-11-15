@@ -57,7 +57,7 @@ Student Management
     ! Please check in project that we have 2 files for import Demo.
     - Import file: students_import.csv and certificates_import.csv
     - We recommend you to put those file in 'documents' folder in Android
-    - All exported files will be saved in: storage/emulated/Android/data/com.example.gk09/files/exports/
+    - All exported files will be saved in: storage/emulated/0/Android/data/com.example.gk09/files/exports/
 
 5. Clone the Repository:
     If you have any  issues with the current project, you can clone it from github by using the following command:
